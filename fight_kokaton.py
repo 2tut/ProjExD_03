@@ -148,6 +148,7 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for _ in range(NUM_OF_BOMBS)]
     beam: Beam = None
+    explosions: [Explosion] = []
 
     clock = pg.time.Clock()
     tmr = 0
@@ -169,15 +170,19 @@ def main():
                 return
 
             if (beam is not None) and (beam.rct.colliderect(bomb.rct)):
-                # beamとbombが衝突したら, beamとbombを消す
+                # beamとbombを消す
                 beam = None
                 bombs[i] = None
+
+                # explosionを生成
+                explosions.append(Explosion(bomb))
 
                 # こうかとん画像を喜ぶ画像に切り替える
                 bird.change_img(6, screen)
                 pg.display.update()
 
             bombs = [bomb for bomb in bombs if bomb is not None]
+            explosions = [explosion for explosion in explosions if explosion is not None]
 
         key_lst = pg.key.get_pressed()
 
@@ -189,9 +194,58 @@ def main():
         if beam is not None:
             beam.update(screen)
 
+        for i, explosion in enumerate(explosions):
+            explosion.update(screen)
+            if explosion.life <= 0:
+                explosions[i] = None
+
         pg.display.update()
         tmr += 1
         clock.tick(50)
+
+
+class Explosion:
+    def __init__(self, bomb: Bomb):
+        explosion_img = pg.image.load("ex03/fig/explosion.gif")
+
+        self._img_list = [
+            pg.transform.flip(explosion_img, False, False),
+            pg.transform.flip(explosion_img, False, True),
+            pg.transform.flip(explosion_img, True, False),
+            pg.transform.flip(explosion_img, True, True)
+        ]
+
+        self._img_index = 0
+        self.img = self._get_img()
+
+        self.rct = self.img.get_rect()
+        self.rct.center = bomb.rct.center
+
+        self._change_img_interval = 10
+        self.life = len(self._img_list) * self._change_img_interval
+
+    def update(self, screen: pg.Surface):
+        self.life -= 1
+        if self.life % self._change_img_interval == 0:
+            self._next_img()
+
+        screen.blit(self.img, self.rct)
+
+    def _next_img(self) -> bool:
+        """
+        画像を切り替える
+        """
+        self._img_index += 1
+        img_list_last_index = len(self._img_list) - 1
+        if (self._img_index > img_list_last_index):
+            self._img_index = img_list_last_index
+        self.img = self._get_img()
+
+    def _get_img(self) -> pg.Surface:
+        """
+        現在の画像を返す
+        """
+        return self._img_list[self._img_index]
 
 
 if __name__ == "__main__":
