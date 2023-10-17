@@ -147,7 +147,7 @@ def main():
     bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for _ in range(NUM_OF_BOMBS)]
-    beam: Beam = None
+    beams: [Beam] = []
     explosions: [Explosion] = []
     score = Score()
 
@@ -158,7 +158,7 @@ def main():
             if event.type == pg.QUIT:
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-                beam = Beam(bird)
+                beams.append(Beam(bird))
 
         screen.blit(bg_img, [0, 0])
 
@@ -170,23 +170,29 @@ def main():
                 time.sleep(1)
                 return
 
-            if (beam is not None) and (beam.rct.colliderect(bomb.rct)):
-                # beamとbombを消す
-                beam = None
-                bombs[i] = None
+            for j, beam in enumerate (beams):
+                if beam.rct.colliderect(bomb.rct):
+                    # beamとbombを消す
+                    bombs[i] = None
+                    beams[j] = None
 
-                # explosionを生成
-                explosions.append(Explosion(bomb))
+                    # explosionを生成
+                    explosions.append(Explosion(bomb))
 
-                # こうかとん画像を喜ぶ画像に切り替える
-                bird.change_img(6, screen)
-                pg.display.update()
+                    # こうかとん画像を喜ぶ画像に切り替える
+                    bird.change_img(6, screen)
+                    pg.display.update()
 
-                # 1点獲得
-                score.gain_points(100)
+                    # 1点獲得
+                    score.gain_points(100)
 
-            bombs = [bomb for bomb in bombs if bomb is not None]
-            explosions = [explosion for explosion in explosions if explosion is not None]
+                elif beam.rct.right > screen.get_width():
+                    beams[j] = None
+
+            beams = [beam for beam in beams if beam is not None]
+
+        bombs = [bomb for bomb in bombs if bomb is not None]
+        explosions = [explosion for explosion in explosions if explosion is not None]
 
         key_lst = pg.key.get_pressed()
 
@@ -195,7 +201,7 @@ def main():
         for bomb in bombs:
             bomb.update(screen)
 
-        if beam is not None:
+        for beam in beams:
             beam.update(screen)
 
         for i, explosion in enumerate(explosions):
