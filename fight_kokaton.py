@@ -149,6 +149,7 @@ def main():
     bombs = [Bomb() for _ in range(NUM_OF_BOMBS)]
     beam: Beam = None
     explosions: [Explosion] = []
+    score = Score()
 
     clock = pg.time.Clock()
     tmr = 0
@@ -181,6 +182,9 @@ def main():
                 bird.change_img(6, screen)
                 pg.display.update()
 
+                # 1点獲得
+                score.gain_points(100)
+
             bombs = [bomb for bomb in bombs if bomb is not None]
             explosions = [explosion for explosion in explosions if explosion is not None]
 
@@ -198,6 +202,8 @@ def main():
             explosion.update(screen)
             if explosion.life <= 0:
                 explosions[i] = None
+
+        score.update(screen)
 
         pg.display.update()
         tmr += 1
@@ -247,6 +253,25 @@ class Explosion:
         """
         return self._img_list[self._img_index]
 
+
+class Score:
+    def __init__(self):
+        self._score = 0
+
+        self.font = pg.font.SysFont("hgp創英角ポップ体", 30)
+        self._font_color = (0, 0, 255)
+        self.img = self.font.render(f"Score: {self._score}", 0, self._font_color)
+        self.rct = self.img.get_rect()
+        display_bottom = pg.display.get_surface().get_height()
+        self.rct.center = 100, display_bottom - 50
+
+    def gain_points(self, points: int):
+        self._score += points
+
+    def update(self, screen: pg.Surface):
+        self.img = self.font.render(f"Score: {self._score}", 0, self._font_color)
+        self.rct = self.img.get_rect()
+        screen.blit(self.img, self.rct)
 
 if __name__ == "__main__":
     pg.init()
