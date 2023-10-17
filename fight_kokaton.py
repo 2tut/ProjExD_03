@@ -255,7 +255,7 @@ class Explosion:
 
         screen.blit(self.img, self.rct)
 
-    def _next_img(self) -> bool:
+    def _next_img(self):
         """
         画像を切り替える
         """
