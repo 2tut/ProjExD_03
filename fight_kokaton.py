@@ -178,6 +178,7 @@ def main():
             if bird.rct.colliderect(bomb.rct):
                 # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
                 bird.change_img(8, screen)
+                score.update(screen)
                 pg.display.update()
                 time.sleep(1)
                 return
@@ -197,6 +198,7 @@ def main():
 
                     # 1点獲得
                     score.gain_points(100)
+                    score.update(screen)
 
                 elif beam.rct.right > screen.get_width():
                     beams[j] = None
