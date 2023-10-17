@@ -161,6 +161,13 @@ def main():
                 beam = None
                 bomb = None
 
+                # こうかとん画像を喜ぶ画像に切り替え, 1秒間表示し, 終了
+                bird.change_img(6, screen)
+                pg.display.update()
+                time.sleep(1)
+
+                return
+
         key_lst = pg.key.get_pressed()
 
         bird.update(key_lst, screen)
