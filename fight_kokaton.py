@@ -42,10 +42,10 @@ class Bird:
         """
         self.img = pg.transform.flip(  # 左右反転
             pg.transform.rotozoom(  # 2倍に拡大
-                pg.image.load(f"ex03/fig/{num}.png"), 
-                0, 
-                2.0), 
-            True, 
+                pg.image.load(f"ex03/fig/{num}.png"),
+                0,
+                2.0),
+            True,
             False
         )
         self.rct = self.img.get_rect()
@@ -110,9 +110,9 @@ class Bomb:
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
-    screen = pg.display.set_mode((WIDTH, HEIGHT))    
+    screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
-    bird = Bird(3, (900, 400))
+    bird = Bird(3x, (900, 400))
     bomb = Bomb((255, 0, 0), 10)
 
     clock = pg.time.Clock()
@@ -121,9 +121,9 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
-        
+
         screen.blit(bg_img, [0, 0])
-        
+
         if bird.rct.colliderect(bomb.rct):
             # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
             bird.change_img(8, screen)
